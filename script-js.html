@@ -1,0 +1,238 @@
+<script>
+
+// Elements
+const definitionElement = document.querySelector('#definition');
+const container = document.querySelector('.container');
+const metricsElement = document.querySelector('#metrics');
+const headerElement = document.querySelector('#header');
+const sendEmailBtn = document.querySelector('#send-email');
+
+// Variables
+const values = {
+    definitions: [
+        ['WorkStream Name',''],
+        ['Sales Executive',''],
+        ['CSM',''],
+        ['Acct. Closed Date','','Est. KO Date',''],
+        ['Pilot / Subscription / OTP / POC Hours','','MRR / $ Value',''],
+    ],
+
+    tableHeader: [
+        ['Indicator', 'Value', 'Weight', 'Score']
+    ],
+    
+    qunatitativeIndicators: [
+        [1, 'Starting MRR or $ Value', 0, '0.200', ''],
+        [2, 'Account Segment', '', '0.100', ''],
+        [3, 'Expansion Likelihood', '', '0.100', ''],
+        [4, 'Pilot / Subscription / OTP / POC', '', '0.100', '']
+    ],
+    
+    subjectiveIndicators: [
+        [5, 'Task Complexity', '', '0.200', ''],
+        [6, 'Tool Complexity', '', '0.100', ''],
+        [7, 'WorkStream Management Effort', '', '0.200', '']
+    ],
+
+    selector: [
+        [2, 'Small Market', 'Mid Market', 'Enterprise'],
+        [3, 'Unlikely','Small', 'Medium', 'Likely (Large)'],
+        [4, 'Pilot', 'Subscription', 'OTP', 'POC'],
+        [5, 'EASY', 'MEDIUM', 'HARD'],
+        [6, 'EASY', 'MEDIUM', 'HARD'],
+        [7, 'HIGH', 'MID', 'LOW']
+    ]
+}
+
+// Object Destructuring
+const {definitions, tableHeader, qunatitativeIndicators, subjectiveIndicators, selector} = values;
+
+// EventListener
+window.addEventListener('DOMContentLoaded', (e) => {
+    addDefinition(definitions);
+    container.innerHTML += `
+        <div class=" row mb-4">
+        </div>    
+    `;
+    
+    addDefinition(tableHeader);
+    document.querySelectorAll('.row')[7].classList += ' bg-primary text-white';
+    container.innerHTML += `
+        <div class="row bg-secondary">
+            <div class="col-md text-center"><h5 class="font-weight-bold m-1">Quantitative Indicators for PM Consideration</h5></div>
+        </div>
+    `;
+    addIndicators(qunatitativeIndicators);
+    container.innerHTML += `
+        <div class="row bg-secondary">
+            <div class="col-md text-center"><h5 class="font-weight-bold m-1">Subjective Indicators for PM Consideration</h5></div>
+        </div>
+    `;
+    addIndicators(subjectiveIndicators);
+
+    container.innerHTML += `
+        <div class="row bg-secondary ml-4 mb-4">
+            <div class="col-9 text-center">
+                <div><h6 class="font-weight-bold m-1">PM REQUIREMENT SCORE</h6></div>
+                <div>>7 will require a PM</div>
+                <div>5-7 will need review by PM Leadership to approve/reject</div>
+                <div><5 no PM required</div>
+            </div>
+            <div class="col-sm text-center table-bordered bg-success p-4"><h3 id="result" class="font-weight-bold text-white">16</h3></div>
+        </div>
+    `;
+
+    addSelector(selector);
+    calculateScore();
+});
+
+window.addEventListener('change', calculateScore);
+
+// Send Email
+function sendEmail() {
+  google.script.run.withSuccessHandler( session => {
+  
+    if(session.indexOf('cloudfactory.com') !== -1) {
+      
+      const domValue = document.querySelectorAll('.row');
+      let childVal = [];
+      let val = [];
+      domValue.forEach( (row, rowIndex) => {
+          if (rowIndex !== 0) {
+              childVal = [];
+              row.childNodes.forEach((child, colIndex) => {
+                  if (child.type === 'text' || child.type === 'date') {
+                      childVal.push(child.value);
+                  } else if((rowIndex > 9 && rowIndex < 17) && rowIndex !== 13) {
+                      if (child.firstChild.tagName === 'SELECT') {
+                          childVal.push(child.firstChild.value);
+                      } else {
+                          childVal.push(child.textContent);
+                      }
+                  } else {
+                      childVal.push(child.textContent);
+                  }
+              });
+              val.push(childVal);
+          }
+      });
+      
+      google.script.run.withSuccessHandler(() => alert('Email Sent!')).driver(val);
+      
+    } else {
+      alert("Login with CloudFactory gmail! Opening Gmail Login Page...");
+      setTimeout(() => {
+        window.open('https://accounts.google.com/signin/v2/identifier?service=mail&passive=true&rm=false&continue=https%3A%2F%2Fmail.google.com%2Fmail%2F&ss=1&scc=1&ltmpl=default&ltmplcache=2&emr=1&osid=1&flowName=GlifWebSignIn&flowEntry=ServiceLogin', '_blank');
+      }, 2000);
+    }
+  }).getSession();
+  
+}
+
+// Add Definition
+function addDefinition(data) {
+    data.forEach((rowEl, index) => {
+        const row = document.createElement('div');
+        row.classList = 'row ml-4';
+
+        rowEl.forEach(colEl => {
+            if (colEl != "") {
+                const col = document.createElement('div');
+                col.classList = 'col-sm font-weight-bold table-bordered';
+                col.textContent = colEl;
+                row.appendChild(col);
+            } else {
+                const col = document.createElement('input');
+                if (index === 3) {
+                    col.type = 'date';
+                } else {
+                    col.type = 'text';
+                }
+                col.classList = 'col-md border-0.5 border-secondary';
+                row.appendChild(col);
+            }
+        });
+        // container.insertBefore(row, metricsElement);
+        container.appendChild(row);
+    });
+}
+
+// Add Indicators
+function addIndicators(data) {
+    data.forEach((rowEl, index) => {
+        const row = document.createElement('div');
+        row.classList = 'row';
+
+        rowEl.forEach( (colEl, index) => {
+            const col = document.createElement('div');
+            col.id = `${rowEl[0]}${index}`;
+            if (index === 0) {
+                col.classList = 'col-# font-weight-bold table-bordered';
+                const span = document.createElement('span');
+                span.classList = 'm-3';
+                span.textContent = colEl;
+                col.appendChild(span);
+            } else {
+                col.classList = 'col-sm font-weight-bold table-bordered';
+                col.textContent = colEl;
+            }
+
+            row.appendChild(col);
+        });
+        container.appendChild(row);
+    });
+}
+
+// Append Data Selector
+function addSelector(data) {
+    selector.forEach( (row) => {
+        const element = document.getElementById(`${row[0]}2`);
+        const select = document.createElement('select');
+        select.classList = 'custom-select border-0';
+        
+        row.forEach( (col, index) => {
+            if (index != 0) {
+                const option = document.createElement('option');
+                option.value = col;
+                option.text = col;
+                select.appendChild(option);
+            }
+        });
+        element.appendChild(select);
+    });
+}
+
+// Calculate Score
+function calculateScore() {
+    const MRR = document.getElementById('12');
+    MRR.innerHTML = `<span class="currSign">`;
+    MRR.firstChild.textContent = Number(document.getElementsByTagName('input')[6].value).toLocaleString('en');
+    let result = 0;
+    for (let index = 1; index <= 7; index++) {
+        const displayElement = document.getElementById(`${index}4`);
+        let input = '';
+        if (index === 1) {
+            input = document.getElementsByTagName('input')[6].value;
+        } else {
+            input = document.getElementById(`${index}2`).firstChild.value;
+        }
+        //=IFS(E11>=50000,F11*5,AND(E11<50000,E11>=10000),F11*1,AND(E11<10000),F11*0)
+        if (input >= 50000) {
+            displayElement.textContent = 1.0;
+        } else if ( (input < 50000 && input >= 20000) || input === 'HARD' || input === 'HIGH' ) {
+            displayElement.textContent = 0.2;
+        } else if (input === 'Enterprise' || input === 'Likely (Large)' || input === 'Subscription' || input === 'MEDIUM' || input === 'MID' ) {
+            displayElement.textContent = 0.1;
+        } else if (input === 'Mid Market' || input === 'Pilot' || input === 'OTP' || input === 'Medium') {
+            displayElement.textContent = 0.05;
+        } else {
+            displayElement.textContent = 0;
+        }
+
+        result += +(document.getElementById(`${index}4`).textContent)*10;
+    }
+    document.getElementById('result').textContent = result;
+}
+
+
+</script>
