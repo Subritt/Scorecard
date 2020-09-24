@@ -6,7 +6,8 @@
     <title>Project Management Scorecard</title>
     <!-- CSS -->
     <link rel="stylesheet" href="https://bootswatch.com/4/lumen/bootstrap.min.css">
-
+    <!-- ICON -->
+    <link rel="shortcut icon" href="https://drive.google.com/uc?export=view&id=1jDd8yqccaVlCxU4IY7oLAruiyP4vp0zG" type="image/x-icon">
     <script src="https://kit.fontawesome.com/427a8b9cac.js" 
     crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -28,7 +29,7 @@
         </h1>
         
         <div id="description">
-            <button type="button" class="btn btn-link btn-" data-toggle="collapse" data-target="#demo">
+            <button type="button" onclick="iconChange()" class="btn btn-link" data-toggle="collapse" data-target="#demo" title="Click to view Descriptions">
               <h5><i class="fa fa-plus"></i><span class="ml-1">DESCRIPTION</span></h5>
             </button>
             <div id="demo" class="collapse m-4">
@@ -38,7 +39,7 @@
                     <th>Indicator#</th>
                     <th>Indicator Descriptions and Notes<br>
                         - Indicators 1 - 4 are quantitative and should be extracted from Salesforce, these can be populated by anyone.<br>
-                        - Indicators 5 - 6 are subjective and should be extracted from the Delivery Solutions Pre-Sales Analysis sheet, these can be populated by anyone.<br>
+                        - Indicators 5 - 6 are subjective and should be extracted from the Pre-Sales Analysis sheet which contains Data, these can be populated by anyone.<br>
                         - Indicator 7 is subjective should be populated by the Program Management Team.
                     </th>
                   </tr>
@@ -48,7 +49,7 @@
                   </tr>
                   <tr>
                     <td>2</td>
-                    <td>From company firmographics, aligned with CF Sales definition.  This data is extracted from Salesforce.</td>
+                    <td>From company firmographics, aligned with Company's Sales definition.  This data is extracted from Salesforce.</td>
                   </tr>
                   <tr>
                     <td>3</td>
@@ -77,9 +78,9 @@
                 <tbody>
                   <tr>
                     <th>Definitions</th>
-                    <th>- POC: Proof of Concept is a small sprint executed by a small Core Team to show that CF can do the task.<br>
-                        - Pilot: A short term project that involves onboarding a team of CloudWorkers who will execute a set number of tasks and prove that CF can do the task.<br>
-                        - OTP: A one-time-project is a finite project that involves a team of CloudWorkers completing a set number of tasks within a set time frame.<br>
+                    <th>- POC: Proof of Concept is a small sprint executed by a small Core Team to show that Company can do the task.<br>
+                        - Pilot: A short term project that involves onboarding a team of Workers who will execute a set number of tasks and prove that Company can do the task.<br>
+                        - OTP: A one-time-project is a finite project that involves a team of Workers completing a set number of tasks within a set time frame.<br>
                         - Subscription: An ongoing project that will have a target number of hours to deliver to the Client on a monthly basis.
                     </th>
                   </tr>
@@ -95,7 +96,7 @@
                                             All requests should be submitted to the Head of Program Management for review.</h5>
           </div>
           <div class="col">
-            <button type="button" onclick="sendEmail()" id="send-email" class="btn btn-primary float-right">Send Email</button>
+            <button type="button" onclick="sendEmail()" id="send-email" class="btn btn-primary float-right" title="Click to Send email to <?= session;?>">Send Email</button>
           </div>
         </div>
     </div>
