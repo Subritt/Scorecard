@@ -63,10 +63,17 @@ const addHtml = (val) => {
                </td>
              `;
            } else if(colIndex === 3) {
-             htmlBody += `
-               <td class="condition"></td>
-               <td class="result"> ${col} </td>
-             `;
+               htmlBody += `
+                 <td class="condition"></td>
+                 <td class="result"> ${col} </td>
+               `;
+               if(col > 7){
+                 emailHtml = emailHtml.replace('%color', '#009c1d');
+               } else if(col >= 5 && col <= 7) {
+                   emailHtml = emailHtml.replace('%color', 'orange');
+               } else {
+                   emailHtml = emailHtml.replace('%color', 'gray');
+               }
            } else if(colIndex === 4) {} 
            else {
                htmlBody += `
@@ -109,6 +116,7 @@ function sendEmail(emailHtml) {
   MailApp.sendEmail({
     to: getSession(),
     subject: "Program Management ScoreCard",
-    htmlBody: emailHtml
+    htmlBody: emailHtml,
+//    cc: 'program-management@cloudfactory.com'
   });
 }
