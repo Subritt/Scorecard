@@ -2,7 +2,7 @@
 
 // Elements
 const definitionElement = document.querySelector('#definition');
-const container = document.querySelector('.container');
+const container = document.querySelector('#score-card');
 const metricsElement = document.querySelector('#metrics');
 const headerElement = document.querySelector('#header');
 const sendEmailBtn = document.querySelector('#send-email');
@@ -78,7 +78,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
                 <div>5-7 will need review by PM Leadership to approve/reject</div>
                 <div><5 no PM required</div>
             </div>
-            <div class="col-sm text-center table-bordered bg-success p-4"><h3 id="result" class="font-weight-bold text-white">16</h3></div>
+            <div id='result-div' class="col-sm text-center table-bordered p-4"><h3 id="result" class="font-weight-bold text-white"></h3></div>
         </div>
     `;
 
@@ -88,8 +88,26 @@ window.addEventListener('DOMContentLoaded', (e) => {
 
 window.addEventListener('change', calculateScore);
 
+// Change icon
+function iconChange() {
+  const icon = document.getElementsByTagName('i')[1];
+  if(icon.classList[1] === 'fa-plus'){
+    icon.classList.remove('fa-plus');
+    icon.classList.add('fa-minus');
+  } else {
+    icon.classList.remove('fa-minus');
+    icon.classList.add('fa-plus');
+  }
+}
+
 // Send Email
 function sendEmail() {
+  const dateRow = document.querySelectorAll('.row')[4];
+  if(dateRow.childNodes[1].value === "" || dateRow.childNodes[3].value === "") {
+    alert("Please Input Date Fields");
+    return;
+  }
+  
   google.script.run.withSuccessHandler( session => {
   
     if(session.indexOf('cloudfactory.com') !== -1) {
@@ -231,8 +249,17 @@ function calculateScore() {
 
         result += +(document.getElementById(`${index}4`).textContent)*10;
     }
+    if(result > 7) {
+      document.getElementById('result-div').className = "col-sm text-center table-bordered p-4 bg-success";
+      document.getElementById('result').className = "font-weight-bold text-white";
+    } else if(result >= 5 && result <= 7) {
+        document.getElementById('result-div').className = "col-sm text-center table-bordered p-4 bg-warning";
+        document.getElementById('result').className = "font-weight-bold text-white";
+    } else {
+        document.getElementById('result-div').className = "col-sm text-center table-bordered p-4 bg-secondary";
+        document.getElementById('result').className = "font-weight-bold text-dark";
+    }
     document.getElementById('result').textContent = result;
 }
-
 
 </script>
