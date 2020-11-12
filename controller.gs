@@ -12,7 +12,7 @@ function include(filename) {
 const getSession = () => Session.getActiveUser().toString();
 
 function driver(val) {
-  if(getSession().indexOf('cloudfactory.com') !== -1) {
+  if(getSession().indexOf('company.com') !== -1) {
     let emailHtml = addHtml(val);
     sendEmail(emailHtml);
     return true;
