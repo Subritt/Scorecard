@@ -117,6 +117,6 @@ function sendEmail(emailHtml) {
     to: getSession(),
     subject: "Program Management ScoreCard",
     htmlBody: emailHtml,
-//    cc: 'program-management@cloudfactory.com'
+//    cc: 'cc@email.com'
   });
 }
